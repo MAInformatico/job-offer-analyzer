@@ -1,0 +1,12 @@
+# config.example.yaml - Copy to config.yaml and customize with your preferences
+criteria:
+  work_mode: "100% remote only"
+  min_salary: 40000
+  contract_type: "permanent preferred"
+  excluded_company_types:
+    - consultancy
+    - staffing agency
+  required_stack:
+    - Python
+    - backend
+  additional_notes: "Add your personal preferences here"
