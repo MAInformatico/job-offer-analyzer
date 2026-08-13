@@ -6,11 +6,18 @@ class LLMBase(ABC):
     def analyze(self, offer_text: str) -> dict:
         """
         Analyzes a job offer and returns a structured assessment.
+        """
+        pass
+
+    @abstractmethod
+    def complete(self, prompt: str) -> dict:
+        """
+        Generic method for LLM completion with a custom prompt.
         
         Args:
-            offer_text: Raw text of the job offer
+            prompt: Custom prompt string
             
         Returns:
-            dict with keys: should_apply (bool), reasons (list), summary (str)
+            Parsed JSON response as dict
         """
         pass

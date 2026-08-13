@@ -80,3 +80,17 @@ class GroqClient(LLMBase):
             raise ValueError(f"No JSON found in LLM response: {content}")
         
         return json.loads(json_match.group())
+
+    def complete(self, prompt: str) -> dict:
+        import re
+        response = self.client.chat.completions.create(
+            messages=[{"role": "user", "content": prompt}],
+            model=self.model,
+        )
+        
+        content = response.choices[0].message.content.strip()
+        json_match = re.search(r'\{.*\}', content, re.DOTALL)
+        if not json_match:
+            raise ValueError(f"No JSON found in LLM response: {content}")
+        
+        return json.loads(json_match.group())
