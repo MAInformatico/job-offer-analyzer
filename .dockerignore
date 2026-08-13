@@ -1,0 +1,10 @@
+.env
+config.yaml
+__pycache__
+*.pyc
+*.pyo
+.git
+.gitignore
+venv
+.venv
+*.md
