@@ -4,6 +4,7 @@ import yaml
 from groq import Groq
 from dotenv import load_dotenv
 from app.services.llm.base import LLMBase
+import re
 
 load_dotenv()
 
@@ -21,7 +22,7 @@ class GroqClient(LLMBase):
     
     def __init__(self):
         self.client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-        self.model = "llama-3.3-70b-versatile"
+        self.model = "openai/gpt-oss-20b"
         self.config = load_config()
     
     def _build_prompt(self, offer_text: str) -> str:
@@ -74,7 +75,6 @@ class GroqClient(LLMBase):
         content = response.choices[0].message.content.strip()
         
         # Extraer JSON aunque haya texto alrededor
-        import re
         json_match = re.search(r'\{.*\}', content, re.DOTALL)
         if not json_match:
             raise ValueError(f"No JSON found in LLM response: {content}")
@@ -82,7 +82,6 @@ class GroqClient(LLMBase):
         return json.loads(json_match.group())
 
     def complete(self, prompt: str) -> dict:
-        import re
         response = self.client.chat.completions.create(
             messages=[{"role": "user", "content": prompt}],
             model=self.model,

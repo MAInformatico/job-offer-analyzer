@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Form
 from app.models.schemas import (
     JobOfferRequest, JobOfferAnalysis,
     CompanyRequest, CompanyAnalysis,
@@ -14,10 +14,23 @@ search_client = DuckDuckGoClient()
 company_analyzer = CompanyAnalyzer(llm_client, search_client)
 
 
+def sanitize_text(text: str) -> str:
+    return text.replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' ')
+
+
 @router.post("/analyze", response_model=JobOfferAnalysis)
 async def analyze_offer(request: JobOfferRequest):
     try:
-        result = llm_client.analyze(request.offer_text)
+        result = llm_client.analyze(sanitize_text(request.offer_text))
+        return JobOfferAnalysis(**result)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/analyze/form", response_model=JobOfferAnalysis)
+async def analyze_offer_form(offer_text: str = Form(...)):
+    try:
+        result = llm_client.analyze(sanitize_text(offer_text))
         return JobOfferAnalysis(**result)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -35,16 +48,16 @@ async def analyze_company(request: CompanyRequest):
 @router.post("/analyze/full", response_model=FullAnalysis)
 async def full_analysis(request: FullAnalysisRequest):
     try:
-        offer_result = llm_client.analyze(request.offer_text)
+        offer_result = llm_client.analyze(sanitize_text(request.offer_text))
         company_result = company_analyzer.analyze(request.company_name)
-        
+
         final_recommendation = (
             "Recommended to apply"
-            if offer_result.get("should_apply") and 
+            if offer_result.get("should_apply") and
             company_result.get("reputation_score") in ["positive", "neutral"]
             else "Not recommended to apply"
         )
-        
+
         return FullAnalysis(
             offer_analysis=JobOfferAnalysis(**offer_result),
             company_analysis=CompanyAnalysis(**company_result),

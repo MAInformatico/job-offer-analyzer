@@ -11,8 +11,6 @@ class JobOfferAnalysis(BaseModel):
     red_flags: list[str]
     salary_info: Optional[str] = None
 
-#For company analysis, we can define a separate schema
-
 class CompanyRequest(BaseModel):
     company_name: str
 
