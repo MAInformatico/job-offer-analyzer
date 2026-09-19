@@ -33,14 +33,14 @@ Searches the web for reviews and signals about a company's culture, reputation, 
 **Request:**
 ```json
 {
-  "company_name": "Mozilla"
+  "company_name": "My business imaginary"
 }
 ```
 
 **Response:**
 ```json
 {
-  "company_name": "Mozilla",
+  "company_name": "My business imaginary",
   "reputation_score": "negative",
   "summary": "Mixed reputation with concerns about culture and leadership",
   "red_flags": ["poor culture ratings", "low career opportunities"],
