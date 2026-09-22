@@ -19,6 +19,8 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install pytest httpx
+      - name: Create config.yaml from example
+        run: cp config.example.yaml config.yaml
       - name: Run tests
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
