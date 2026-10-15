@@ -28,7 +28,6 @@ Job Analyzer uses an LLM to:
 - Groq API (openai/gpt-oss-20b)
 - Pydantic
 - Docker
-- Lightweight frontend (planned)
 
 ## API Endpoints
 
@@ -69,7 +68,7 @@ Job Analyzer uses an LLM to:
   "company_name": "My business imaginary",
   "reputation_score": "negative",
   "summary": "Mixed reputation with concerns about culture and leadership",
-  "red_flags": ["poor culture ratings", "low career opportunities"],
+  "red_flags": ["no salary range disclosed", "vague role responsibilities"],
   "positive_signals": ["interesting projects", "flexible schedule"],
   "sources_consulted": ["https://glassdoor.com/..."]
 }
@@ -98,6 +97,8 @@ Job Analyzer uses an LLM to:
 ## How to run it
 
 ```bash
+cp config.example.yaml config.yaml
+export GROQ_API_KEY=your_key
 docker-compose up --build
 ```
 
