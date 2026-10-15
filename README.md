@@ -28,7 +28,7 @@ Job Analyzer uses an LLM to:
 - OpenAI / LLM APIs
 - Pydantic
 - Docker
-- (pendiente: frontend ligero)
+- Lightweight frontend (planned)
 
 ## API Endpoints
 
