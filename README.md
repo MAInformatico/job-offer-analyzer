@@ -9,6 +9,7 @@ Job hunting is time-consuming and often demoralizing. Many offers look good on t
 ## Solution
 
 Job Analyzer uses an LLM to:
+
 - Analyze the offer text against personal criteria (remote, stack, role, salary range).
 - Research the company's reputation (culture, reviews, red flags).
 - Return a clear recommendation with reasons, red flags, and positive signals.
@@ -16,16 +17,17 @@ Job Analyzer uses an LLM to:
 ## Architecture
 
 1. User submits an offer text and/or company name via REST API.
-2. The service uses an LLM (LangChain) to extract key signals.
-3. A company reputation module searches the web for reviews and signals.
-4. The result is combined into a final recommendation.
+2. The service uses an LLM (LangChain + Groq API) to extract key signals from the offer.
+3. A company reputation module searches the web (DuckDuckGo) for reviews and signals about the company and passes the results to the LLM.
+4. Both results are combined into a final recommendation.
 
 ## Technologies
 
 - Python
 - FastAPI
 - LangChain
-- Groq API (openai/gpt-oss-20b)
+- Groq API (`openai/gpt-oss-20b`)
+- DuckDuckGo Search
 - Pydantic
 - Docker
 
@@ -105,16 +107,17 @@ Job Analyzer uses an LLM to:
 
 ## How to run it
 
+With Docker:
+
 ```bash
 cp config.example.yaml config.yaml
 export GROQ_API_KEY=your_key
 docker-compose up --build
 ```
 
-Or in local:
+Or locally (also requires `config.yaml` and `GROQ_API_KEY` as above):
 
 ```bash
-Locally (also requires `config.yaml` and `GROQ_API_KEY` as above):
 pip install -r requirements.txt
 uvicorn main:app --reload
 ```
@@ -122,12 +125,13 @@ uvicorn main:app --reload
 ## Design decisions
 
 - **Groq with an open-weight model (`gpt-oss-20b`):** low latency and near-zero inference cost for a self-hosted tool, at the price of a smaller model than frontier APIs.
+- **DuckDuckGo for web search:** no API key or paid plan required, which keeps the tool easy to run and self-host.
 - **Synchronous REST API:** the use case is one request, one analysis; a queue would add complexity without benefit at this scale.
 - **Structured output:** LLM responses are requested as JSON and validated with Pydantic models, so the API returns a predictable schema.
 
 ## Limitations
 
-- Company reputation depends on what the web search returns; sources may be sparse or biased.
+- Company reputation depends on DuckDuckGo search results; sources may be sparse, outdated or biased, and no source ranking is applied.
 - The LLM can misinterpret an offer or cite sources inaccurately; results are a screening aid, not a verdict.
 - No caching, rate limiting or authentication yet.
 
