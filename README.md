@@ -32,26 +32,31 @@ Job Analyzer uses an LLM to:
 ## API Endpoints
 
 ### Analyze a job offer
+
 `POST /api/v1/analyze`
 
 **Request:**
+
 ```json
 {
   "offer_text": "paste the full job offer text here"
 }
 ```
+
 **Response:**
 
 ```json
 {
   "should_apply": false,
-  "reasons": ["company type does not match preferred criteria"],
+  "reasons": ["salary range not disclosed", "role responsibilities are unclear"],
   "summary": "Remote Python role at a global services company",
-  "red_flags": ["top global clients", "project success rate"],
+  "red_flags": ["no salary range disclosed", "vague role responsibilities"],
   "salary_info": null
 }
 ```
+
 ### Analyze a company's reputation
+
 `POST /api/v1/company`
 
 **Request:**
@@ -61,19 +66,22 @@ Job Analyzer uses an LLM to:
   "company_name": "My business imaginary"
 }
 ```
+
 **Response:**
 
 ```json
 {
   "company_name": "My business imaginary",
-  "reputation_score": "negative",
+  "reputation_score": "mixed",
   "summary": "Mixed reputation with concerns about culture and leadership",
-  "red_flags": ["no salary range disclosed", "vague role responsibilities"],
+  "red_flags": ["poor culture ratings", "high turnover reported"],
   "positive_signals": ["interesting projects", "flexible schedule"],
   "sources_consulted": ["https://glassdoor.com/..."]
 }
 ```
+
 ### Full analysis (offer + company)
+
 `POST /api/v1/analyze/full`
 
 **Request:**
@@ -84,12 +92,13 @@ Job Analyzer uses an LLM to:
   "company_name": "Company Name"
 }
 ```
+
 **Response:**
 
 ```json
 {
-  "offer_analysis": { ... },
-  "company_analysis": { ... },
+  "offer_analysis": { "...": "..." },
+  "company_analysis": { "...": "..." },
   "final_recommendation": "Not recommended to apply"
 }
 ```
@@ -105,9 +114,22 @@ docker-compose up --build
 Or in local:
 
 ```bash
+Locally (also requires `config.yaml` and `GROQ_API_KEY` as above):
 pip install -r requirements.txt
 uvicorn main:app --reload
 ```
+
+## Design decisions
+
+- **Groq with an open-weight model (`gpt-oss-20b`):** low latency and near-zero inference cost for a self-hosted tool, at the price of a smaller model than frontier APIs.
+- **Synchronous REST API:** the use case is one request, one analysis; a queue would add complexity without benefit at this scale.
+- **Structured output:** LLM responses are requested as JSON and validated with Pydantic models, so the API returns a predictable schema.
+
+## Limitations
+
+- Company reputation depends on what the web search returns; sources may be sparse or biased.
+- The LLM can misinterpret an offer or cite sources inaccurately; results are a screening aid, not a verdict.
+- No caching, rate limiting or authentication yet.
 
 ## What I learned
 
