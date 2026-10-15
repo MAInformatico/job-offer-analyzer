@@ -25,7 +25,7 @@ Job Analyzer uses an LLM to:
 - Python
 - FastAPI
 - LangChain
-- OpenAI / LLM APIs
+- Groq API (openai/gpt-oss-20b)
 - Pydantic
 - Docker
 - Lightweight frontend (planned)
